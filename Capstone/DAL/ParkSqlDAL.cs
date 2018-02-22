@@ -26,7 +26,7 @@ namespace Capstone.DAL
                 using(SqlConnection conn = new SqlConnection(ConnectionString))
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM park;", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM park ORDER BY name;", conn);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
