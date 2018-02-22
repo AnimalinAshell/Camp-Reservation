@@ -18,7 +18,7 @@ namespace Capstone
             {
                 if (numberOfAttempts > 0)
                 {
-                    Console.WriteLine("Invalid input format. Please try again");
+                    Console.WriteLine("Invalid input format. Please try again.");
                 }
 
                 Console.Write(message + " ");
@@ -42,7 +42,7 @@ namespace Capstone
             {
                 if (numberOfAttempts > 0)
                 {
-                    Console.WriteLine("Invalid input format. Please try again");
+                    Console.WriteLine("Invalid input format. Please try again.");
                 }
 
                 Console.Write(message + " ");
@@ -65,7 +65,7 @@ namespace Capstone
             {
                 if (numberOfAttempts > 0)
                 {
-                    Console.WriteLine("Invalid input format. Please try again");
+                    Console.WriteLine("Invalid input format. Please try again.");
                 }
 
                 Console.Write(message + " ");
@@ -86,7 +86,7 @@ namespace Capstone
             {
                 if (numberOfAttempts > 0)
                 {
-                    Console.WriteLine("Invalid input format. Please try again");
+                    Console.WriteLine("Invalid input format. Please try again.");
                 }
                 
                 Console.Write(message + " ");

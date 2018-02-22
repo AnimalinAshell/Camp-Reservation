@@ -16,13 +16,13 @@ namespace Capstone.Models
         public int Visitors { get; set; }
         public string Description { get; set; }
 
-        public string ToString()
+        public override string ToString()
         {
-            return Name + "\n" +
-                   "Locations".PadRight(17) + Location + "\n" +
-                   "Established".PadRight(17) + Establish_Date.ToShortDateString() + "\n" +
-                   "Area".PadRight(17) + Area.ToString() + " sq km" + "\n" +
-                   "Annual Visitors".PadRight(17) + $"{Visitors:#,###,##0}" + "\n\n" +
+            return Name + " National Park" + "\n" +
+                   "Locations:".PadRight(17) + Location + "\n" +
+                   "Established:".PadRight(17) + Establish_Date.ToShortDateString() + "\n" +
+                   "Area:".PadRight(17) + Area.ToString() + " sq km" + "\n" +
+                   "Annual Visitors:".PadRight(17) + $"{Visitors:###,###,###,##0}" + "\n\n" +
                    Description;
         }
     }
