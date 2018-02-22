@@ -28,7 +28,6 @@ namespace Capstone
             while (!int.TryParse(userInput, out intValue));
 
             return intValue;
-
         }
 
 
@@ -52,7 +51,6 @@ namespace Capstone
             while (!double.TryParse(userInput, out doubleValue));
 
             return doubleValue;
-
         }
 
         public static bool GetBool(string message)
@@ -96,6 +94,29 @@ namespace Capstone
             while (String.IsNullOrEmpty(userInput));
 
             return userInput;
+        }
+
+
+        public static DateTime GetDate(string message)
+        {
+            string userInput = String.Empty;
+            DateTime dateValue = new DateTime();
+            int numberOfAttempts = 0;
+
+            do
+            {
+                if (numberOfAttempts > 0)
+                {
+                    Console.WriteLine("Invalid input format. Please try again.");
+                }
+
+                Console.Write(message + " ");
+                userInput = Console.ReadLine();
+                numberOfAttempts++;
+            }
+            while (!DateTime.TryParse(userInput, out dateValue));
+
+            return dateValue;
         }
     }
 }
