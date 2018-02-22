@@ -9,7 +9,7 @@ namespace Capstone.Models
     public class Campground
     {
 
-        private const int NAME_PAD = 17;
+        private const int NAME_PAD = 35;
         private const int DATE_PAD = 12;
 
         public int Campground_Id { get; set; }
@@ -22,9 +22,9 @@ namespace Capstone.Models
         public override string ToString()
         {
             return $"{Name,-NAME_PAD}" +
-                    $"{new DateTime(2000, Open_From_MM, 2).ToString("MMM"),-DATE_PAD}" +
-                    $"{new DateTime(2000, Open_To_MM, 2).ToString("MMM"),-DATE_PAD}" +
-                    $"{Daily_Fee}";
+                    $"{new DateTime(2000, Open_From_MM, 2).ToString("MMMM"),-DATE_PAD}" +
+                    $"{new DateTime(2000, Open_To_MM, 2).ToString("MMMM"),-DATE_PAD}" +
+                    $"{Daily_Fee.ToString("C")}";
         }
 
         public static string Header => "Name".PadRight(NAME_PAD) + "Open".PadRight(DATE_PAD) + "Close".PadRight(DATE_PAD) + "Daily Fee";

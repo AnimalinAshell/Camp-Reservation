@@ -105,7 +105,7 @@ namespace Capstone
             }
 
             Console.WriteLine("Select a Command");
-            Console.WriteLine("  1) Search for Available Rservation");
+            Console.WriteLine("  1) Search for Available Reservation");
             Console.WriteLine("  2) Return to Previous Screen");
 
 
@@ -128,8 +128,10 @@ namespace Capstone
         private void SearchForReservation(Park park)
         {
             CLIHelper.GetInteger("Which campground (enter 0 to cancel)?"); // NEED TO VALIDATE AND ALLOW CANCEL
-            CLIHelper.GetDate("What is te arrival date? MM/DD/YYYY");
+            CLIHelper.GetDate("What is the arrival date? MM/DD/YYYY");
             CLIHelper.GetDate("What is the departure date? MM/DD/YYYY");
+
+
         }
     }
 }
