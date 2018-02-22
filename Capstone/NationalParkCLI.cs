@@ -73,6 +73,7 @@ namespace Capstone
                     if (parkOption == 1)
                     {
                         ViewCampgrounds(parks[parkSelection]);
+                        ActOnCampgrounds(parks[parkSelection]);
                     }
                     else if (parkOption == 2)
                     {
@@ -91,7 +92,7 @@ namespace Capstone
             }
         }
 
-        private void ViewCampgrounds(Park park)
+        private List<Campground> ViewCampgrounds(Park park)
         {
             Console.Clear();
             CampgroundSqlDAL cgDAL = new CampgroundSqlDAL(ConnectionString);
@@ -104,6 +105,11 @@ namespace Capstone
                 Console.WriteLine($"#{i,-1}   {campgrounds[i]}");
             }
 
+            return campgrounds;
+        }
+
+        private void ActOnCampgrounds(Park park)
+        { 
             Console.WriteLine("Select a Command");
             Console.WriteLine("  1) Search for Available Reservation");
             Console.WriteLine("  2) Return to Previous Screen");
@@ -126,10 +132,31 @@ namespace Capstone
 
         private void SearchForReservation(Park park)
         {
-            CLIHelper.GetInteger("Which campground (enter 0 to cancel)?"); // NEED TO VALIDATE AND ALLOW CANCEL
-            CLIHelper.GetDate("What is the arrival date? MM/DD/YYYY");
-            CLIHelper.GetDate("What is the departure date? MM/DD/YYYY");
+            int cgSelection;
+            DateTime arrivalDate;
+            DateTime departureDate;
 
+            List<Campground> campgrounds = ViewCampgrounds(park);
+
+            while (true)
+            {
+                cgSelection = CLIHelper.GetInteger("Which campground (enter 0 to cancel)?");
+
+                if(cgSelection == 0)
+                {
+                    return;
+                }
+                else if (cgSelection > 0 && cgSelection < campgrounds.Count)
+                {
+                    break;
+                }
+            }
+
+            arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
+            departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
+
+            SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
+            List<Site> availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
 
         }
     }
