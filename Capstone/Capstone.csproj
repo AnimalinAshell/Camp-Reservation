@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLIHelper.cs" />
     <Compile Include="DAL\ParkSqlDAL.cs" />
     <Compile Include="Models\Park.cs" />
+    <Compile Include="NationalParkCLI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
