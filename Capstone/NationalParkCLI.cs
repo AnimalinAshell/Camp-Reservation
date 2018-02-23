@@ -18,6 +18,8 @@ namespace Capstone
             this.ConnectionString = connectionString;
         }
 
+        bool individualPark = true;
+
         public void Run()
         {
             ParkSqlDAL p = new ParkSqlDAL(ConnectionString);
@@ -51,45 +53,51 @@ namespace Capstone
 
                 if (parkSelection == parks.Count)
                 {
-                    break;
+                    // Quit at Main Menu
+                    break; 
                 }
-                else if (parkSelection > 0 && parkSelection < parks.Count)
+
+                while (individualPark)
                 {
                     Console.Clear();
                     Console.WriteLine(parks[parkSelection]);
+
+                    int parkOption;
+
+                    Console.WriteLine();
+                    Console.WriteLine("  1)  View Campgrounds");
+                    Console.WriteLine("  2)  Search for Reservation");
+                    Console.WriteLine("  3)  Return to Previous Screen");
+
+                    
+                    while (true)
+                    {
+                        parkOption = CLIHelper.GetInteger(">>");
+
+                        if (parkOption == 1)
+                        {
+                            ViewCampgrounds(parks[parkSelection]);
+                            ActOnCampgrounds(parks[parkSelection]);
+                            break;
+                        }
+                        else if (parkOption == 2)
+                        {
+                            SearchForReservation(parks[parkSelection]);
+                            break;
+                        }
+                        else if (parkOption == 3)
+                        {
+                            individualPark = false;
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid option. Please choose a number from the list.");
+                        }
+
+                    }
                 }
-
-                int parkOption;
-
-                Console.WriteLine();
-                Console.WriteLine("  1)  View Campgrounds");
-                Console.WriteLine("  2)  Search for Reservation");
-                Console.WriteLine("  3)  Return to Previous Screen");
-
-                while (true)
-                {
-                    parkOption = CLIHelper.GetInteger(">>");
-
-                    if (parkOption == 1)
-                    {
-                        ViewCampgrounds(parks[parkSelection]);
-                        ActOnCampgrounds(parks[parkSelection]);
-                        break;
-                    }
-                    else if (parkOption == 2)
-                    {
-                        SearchForReservation(parks[parkSelection]);
-                        break;
-                    }
-                    else if (parkOption == 3)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid option. Please choose a number from the list.");
-                    }
-                }
+                
             }
         }
 
@@ -120,16 +128,21 @@ namespace Capstone
             while (true)
             {
                 campgroundOption = CLIHelper.GetInteger(">>");
-                if (campgroundOption == 1)
+                if (campgroundOption != 1 && campgroundOption != 2)
                 {
-                    SearchForReservation(park);
-                    break;
+                    Console.WriteLine("Please enter valid choice.");
                 }
-                else if (campgroundOption == 2)
+                else
                 {
                     break;
                 }
             }
+
+            if (campgroundOption == 1)
+            {
+                SearchForReservation(park);
+            }
+           
         }
 
         private void SearchForReservation(Park park)
@@ -227,6 +240,7 @@ namespace Capstone
             Console.WriteLine();
             Console.WriteLine("Thank you for using our reservation system.");
             Console.WriteLine("Please press enter to return to the main menu.");
+            individualPark = false;
             Console.ReadLine();
 
         }
