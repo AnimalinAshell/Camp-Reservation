@@ -39,6 +39,7 @@ namespace Capstone.DAL
                     {
                         Site s = new Site();
                         s.Accessible = Convert.ToBoolean(reader["accessible"]) ? "Yes" : "No";
+                        s.Site_Id = Convert.ToInt32(reader["site_id"]);
                         s.Daily_Fee = Convert.ToDecimal(reader["daily_fee"]);
                         s.Max_Occupancy = Convert.ToInt32(reader["max_occupancy"]);
                         s.Max_Rv_Length = Convert.ToInt32(reader["max_rv_length"]);
@@ -77,6 +78,7 @@ namespace Capstone.DAL
                     while (reader.Read())
                     {
                         Site s = new Site();
+                        s.Site_Id = Convert.ToInt32(reader["site_id"]);
                         s.Accessible = Convert.ToBoolean(reader["accessible"]) ? "Yes" : "No";
                         s.Daily_Fee = Convert.ToDecimal(reader["daily_fee"]);
                         s.Max_Occupancy = Convert.ToInt32(reader["max_occupancy"]);
@@ -100,6 +102,7 @@ namespace Capstone.DAL
         static string AvailableSitesFromCampground =
             "SELECT TOP 5                                                                   " + "\n" +
             "   s.site_number,                                                              " + "\n" +
+            "   s.site_id,                                                                  " + "\n" +
             "	s.max_occupancy,                                                            " + "\n" +
             "	s.accessible,                                                               " + "\n" +
             "	s.max_rv_length,                                                            " + "\n" +

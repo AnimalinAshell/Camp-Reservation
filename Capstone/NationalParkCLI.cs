@@ -155,7 +155,7 @@ namespace Capstone
             }
 
             List<Site> availableSites;
-            int[] site_ids;
+            int[] site_numbers;
 
             while (true)
             {
@@ -176,7 +176,7 @@ namespace Capstone
 
                 SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
                 availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
-                site_ids = availableSites.Select(s => s.Site_Id).ToArray();
+                site_numbers = availableSites.Select(s => s.Site_Number).ToArray();
 
                 if (availableSites.Count == 0)
                 {
@@ -202,16 +202,18 @@ namespace Capstone
                         {
                             break;
                         }
-                        else if (site_ids.Contains(reservationChoice))
+                        else if (site_numbers.Contains(reservationChoice))
                         {
                             Reservation newReservation = new Reservation();
-                            newReservation.Site_Id = ((Site)availableSites.Where(s => s.Site_Id == reservationChoice)).Site_Id;
+                            newReservation.Site_Id = availableSites.Where(s => s.Site_Number == reservationChoice).First().Site_Id;
                             newReservation.From_Date = arrivalDate;
                             newReservation.To_Date = departureDate;
                             newReservation.Name = CLIHelper.GetString("What name should the reservation be made under? ");
 
                             ReservationSqlDAL rDal = new ReservationSqlDAL(ConnectionString);
-                            rDal.AddReservation(newReservation);
+                            int reservationConfirmation = rDal.AddReservation(newReservation);
+                            Console.WriteLine("The reservation has been made and the confirmation id is {0}", reservationConfirmation);
+                            break;
                         }
                         else
                         {
