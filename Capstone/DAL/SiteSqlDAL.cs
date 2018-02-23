@@ -44,6 +44,8 @@ namespace Capstone.DAL
                         s.Max_Rv_Length = Convert.ToInt32(reader["max_rv_length"]);
                         s.Site_Number = Convert.ToInt32(reader["site_number"]);
                         s.Utilities = Convert.ToBoolean(reader["utilities"]) ? "Yes" : "N/A";
+
+                        sites.Add(s);
                     }
                 }
             }
@@ -81,6 +83,8 @@ namespace Capstone.DAL
                         s.Max_Rv_Length = Convert.ToInt32(reader["max_rv_length"]);
                         s.Site_Number = Convert.ToInt32(reader["site_number"]);
                         s.Utilities = Convert.ToBoolean(reader["utilities"]) ? "Yes" : "N/A";
+
+                        sites.Add(s);
                     }
                 }
             }
@@ -91,10 +95,6 @@ namespace Capstone.DAL
 
             return sites;
         }
-
-
-
-
 
 
         static string AvailableSitesFromCampground =

@@ -74,10 +74,12 @@ namespace Capstone
                     {
                         ViewCampgrounds(parks[parkSelection]);
                         ActOnCampgrounds(parks[parkSelection]);
+                        break;
                     }
                     else if (parkOption == 2)
                     {
                         SearchForReservation(parks[parkSelection]);
+                        break;
                     }
                     else if (parkOption == 3)
                     {
@@ -88,7 +90,6 @@ namespace Capstone
                         Console.WriteLine("Invalid option. Please choose a number from the list.");
                     }
                 }
-
             }
         }
 
@@ -122,6 +123,7 @@ namespace Capstone
                 if (campgroundOption == 1)
                 {
                     SearchForReservation(park);
+                    break;
                 }
                 else if (campgroundOption == 2)
                 {
@@ -152,12 +154,48 @@ namespace Capstone
                 }
             }
 
-            arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
-            departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
+            List<Site> availableSites;
+            while (true)
+            {
+                while (true)
+                {
+                    arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
+                    departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
 
-            SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
-            List<Site> availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
+                    if (arrivalDate.Date < departureDate.Date)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Departure date must be at least one day after arrival date.");
+                    }
+                }
+                
+                SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
+                availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
 
+                if (availableSites.Count == 0)
+                {
+                    string wantsAlternateRange = CLIHelper.GetString("No available sites. Would you like to enter an alternate date range? (yes or no) /n");
+                    if (wantsAlternateRange.ToLower() != "yes")
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            Console.WriteLine(Site.Header);
+            for (int i = 0; i < availableSites.Count; i++)
+            {
+                Console.WriteLine(availableSites[i]);
+            }
+
+            Console.ReadLine();
         }
     }
 }
