@@ -98,59 +98,53 @@ namespace Capstone.DAL
 
 
         static string AvailableSitesFromCampground =
-            "SELECT" +
-            "   s.site_number," + "\n" +
-            "   s.max_occupancy," + "\n" +
-            "   s.accessible," + "\n" +
-            "   s.max_rv_length," + "\n" +
-            "   s.utilities," + "\n" +
-            "   c.daily_fee" + "\n" +
-            "FROM site s" + "\n" +
-            "LEFT JOIN reservation r ON r.site_id = s.site_id" + "\n" +
-            "JOIN campground c ON c.campground_id = s.campground_id" + "\n" +
-            "WHERE" + "\n" +
-            "    c.campground_id = @input_campground_id AND" + "\n" +
-            "    s.site_id NOT IN (" + "\n" +
-            "       SELECT rs.site_id" + "\n" +
-            "       FROM reservation rs" + "\n" +
-            "       WHERE" + "\n" +
-            "          (@input_to_date > rs.from_date AND @input_to_date < rs.to_date) OR" + "\n" +
-            "          (@input_from_date > rs.from_date AND @input_from_date < rs.to_date)" + "\n" +
-            "	)" + "\n" +
-            "GROUP BY" + "\n" +
-            "    s.site_number," + "\n" +
-            "    s.max_occupancy," + "\n" +
-            "    s.accessible," + "\n" +
-            "    s.max_rv_length," + "\n" +
-            "    s.utilities," + "\n" +
-            "    c.daily_fee;";
+            "SELECT                                                                         " + "\n" +
+            "   s.site_number,                                                              " + "\n" +
+            "	s.max_occupancy,                                                            " + "\n" +
+            "	s.accessible,                                                               " + "\n" +
+            "	s.max_rv_length,                                                            " + "\n" +
+            "	s.utilities,                                                                " + "\n" +
+            "	c.daily_fee                                                                 " + "\n" +
+            "FROM site s                                                                    " + "\n" +
+            "JOIN campground c ON c.campground_id = s.campground_id                         " + "\n" +
+            "WHERE                                                                          " + "\n" +
+            "    c.campground_id = @input_campground_id AND                                 " + "\n" +
+            "    c.open_from_mm <= MONTH(@input_from_date) AND                              " + "\n" +
+            "    c.open_to_mm >= MONTH(@input_to_date) AND                                  " + "\n" +
+            "    ((c.open_from_mm = 1 AND c.open_to_mm = 12) OR                             " + "\n" +
+            "    (YEAR(@input_from_date) = YEAR(@input_to_date))) AND                       " + "\n" +
+            "    s.site_id NOT IN (                                                         " + "\n" +
+            "        SELECT r.site_id                                                       " + "\n" +
+            "        FROM reservation r                                                     " + "\n" +
+            "        WHERE                                                                  " + "\n" +
+            "            (@input_to_date > from_date AND @input_to_date <= to_date) OR      " + "\n" +
+            "            (@input_from_date >= from_date AND @input_from_date<to_date) OR    " + "\n" +
+            "            (@input_from_date <= from_date AND @input_to_date > to_date)       " + "\n" +
+            "	);                                                                          ";
 
         static string AvailableSitesFromPark =
-            "SELECT" +
-            "s.site_number," + "\n" +
-            "s.max_occupancy," + "\n" +
-            "s.accessible," + "\n" +
-            "s.max_rv_length," + "\n" +
-            "s.utilities," + "\n" +
-            "c.daily_fee" + "\n" +
-            "FROM site s" + "\n" +
-            "LEFT JOIN reservation r ON r.site_id = s.site_id" + "\n" +
-            "JOIN campground c ON c.campground_id = s.campground_id" + "\n" +
-            "WHERE" + "\n" +
-            "    c.park_id = @input_park_id AND" + "\n" +
-            "    s.site_id NOT IN (" + "\n" +
-            "    SELECT rs.site_id" + "\n" +
-            "    FROM reservation rs" + "\n" +
-            "    WHERE" + "\n" +
-            "       (@input_to_date > rs.from_date AND @input_to_date < rs.to_date) OR" + "\n" +
-            "       (@input_from_date > rs.from_date AND @input_from_date < rs.to_date)" + "\n" +
-            "	)" + "\n" +
-            "GROUP BY" + "\n" +
-            "   s.site_number," + "\n" +
-            "   s.max_occupancy," + "\n" +
-            "   s.accessible," + "\n" +
-            "   s.max_rv_length," + "\n" +
-            "   s.utilities," + "\n" +
-            "   c.daily_fee;";
+            "SELECT                                                                         " + "\n" +
+            "   s.site_number,                                                              " + "\n" +
+            "	s.max_occupancy,                                                            " + "\n" +
+            "	s.accessible,                                                               " + "\n" +
+            "	s.max_rv_length,                                                            " + "\n" +
+            "	s.utilities,                                                                " + "\n" +
+            "	c.daily_fee                                                                 " + "\n" +
+            "FROM site s                                                                    " + "\n" +
+            "JOIN campground c ON c.campground_id = s.campground_id                         " + "\n" +
+            "WHERE                                                                          " + "\n" +
+            "    c.park_id = @input_park_id AND                                             " + "\n" +
+            "    c.open_from_mm <= MONTH(@input_from_date) AND                              " + "\n" +
+            "    c.open_to_mm >= MONTH(@input_to_date) AND                                  " + "\n" +
+            "    ((c.open_from_mm = 1 AND c.open_to_mm = 12) OR                             " + "\n" +
+            "    (YEAR(@input_from_date) = YEAR(@input_to_date))) AND                       " + "\n" +
+            "    s.site_id NOT IN (                                                         " + "\n" +
+            "        SELECT r.site_id                                                       " + "\n" +
+            "        FROM reservation r                                                     " + "\n" +
+            "        WHERE                                                                  " + "\n" +
+            "            (@input_to_date > from_date AND @input_to_date <= to_date) OR      " + "\n" +
+            "            (@input_from_date >= from_date AND @input_from_date<to_date) OR    " + "\n" +
+            "            (@input_from_date <= from_date AND @input_to_date > to_date)       " + "\n" +
+            "	);                                                                          ";
     }
 }
