@@ -20,14 +20,14 @@ namespace Capstone.Models
 
         private const int PADDING = 15;
         private string Max_Rv_Length_String => Max_Rv_Length > 0 ? Max_Rv_Length.ToString() : "N/A";
-        public override string ToString()
+        public string ToString(int numOfDays)
         {
             return $"{Site_Number,-PADDING}" +
                     $"{Max_Occupancy,-PADDING}" +
                     $"{Accessible,-PADDING}" +
                     $"{Max_Rv_Length_String,-PADDING}" +
                     $"{Utilities,-PADDING}" + 
-                    $"{Daily_Fee.ToString("C")}";
+                    $"{(numOfDays * Daily_Fee).ToString("C")}";
         }
 
         public static string Header => "Site No".PadRight(PADDING) + "Max Occup.".PadRight(PADDING) + "Accessible?".PadRight(PADDING) + 

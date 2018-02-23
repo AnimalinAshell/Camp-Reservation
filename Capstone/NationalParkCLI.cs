@@ -205,7 +205,7 @@ namespace Capstone
                     Console.WriteLine(Site.Header);
                     for (int i = 0; i < availableSites.Count; i++)
                     {
-                        Console.WriteLine(availableSites[i]);
+                        Console.WriteLine(availableSites[i].ToString((int)(departureDate - arrivalDate).TotalDays));
                     }
 
                     Console.WriteLine();
