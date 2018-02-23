@@ -18,7 +18,7 @@ namespace Capstone
             this.ConnectionString = connectionString;
         }
 
-        bool individualPark = true;
+        bool individualPark;
 
         public void Run()
         {
@@ -30,6 +30,7 @@ namespace Capstone
                 Console.Clear();
                 Console.WriteLine("Select a park for further details..");
                 int parkSelection;
+                individualPark = true;
 
                 for (int i = 1; i < parks.Count; i++)
                 {

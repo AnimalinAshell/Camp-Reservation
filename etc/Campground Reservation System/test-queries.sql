@@ -7,6 +7,7 @@ DECLARE @input_from_date AS date = '2018-04-23'
 DECLARE @input_to_date AS date = '2018-04-24'
 SELECT
 	s.site_number,
+	s.site_id,
 	s.max_occupancy,
 	s.accessible,
 	s.max_rv_length,
