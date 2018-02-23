@@ -13,7 +13,7 @@ namespace Capstone
     {
         private string ConnectionString { get; set; }
 
-        public NationalParkCLI (string connectionString)
+        public NationalParkCLI(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
@@ -110,7 +110,7 @@ namespace Capstone
         }
 
         private void ActOnCampgrounds(Park park)
-        { 
+        {
             Console.WriteLine("Select a Command");
             Console.WriteLine("  1) Search for Available Reservation");
             Console.WriteLine("  2) Return to Previous Screen");
@@ -144,7 +144,7 @@ namespace Capstone
             {
                 cgSelection = CLIHelper.GetInteger("Which campground (enter 0 to cancel)?");
 
-                if(cgSelection == 0)
+                if (cgSelection == 0)
                 {
                     return;
                 }
@@ -155,6 +155,8 @@ namespace Capstone
             }
 
             List<Site> availableSites;
+            int[] site_ids;
+
             while (true)
             {
                 while (true)
@@ -171,13 +173,14 @@ namespace Capstone
                         Console.WriteLine("Departure date must be at least one day after arrival date.");
                     }
                 }
-                
+
                 SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
                 availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
+                site_ids = availableSites.Select(s => s.Site_Id).ToArray();
 
                 if (availableSites.Count == 0)
                 {
-                    string wantsAlternateRange = CLIHelper.GetString("No available sites. Would you like to enter an alternate date range? (yes or no) /n");
+                    string wantsAlternateRange = CLIHelper.GetString("No available sites. Would you like to enter an alternate date range? (yes or no): ");
                     if (wantsAlternateRange.ToLower() != "yes")
                     {
                         break;
@@ -185,17 +188,45 @@ namespace Capstone
                 }
                 else
                 {
+                    Console.WriteLine(Site.Header);
+                    for (int i = 0; i < availableSites.Count; i++)
+                    {
+                        Console.WriteLine(availableSites[i]);
+                    }
+
+                    Console.WriteLine();
+                    while (true)
+                    {
+                        int reservationChoice = CLIHelper.GetInteger("Which site should be reserved (enter 0 to cancel)? ");
+                        if (reservationChoice == 0)
+                        {
+                            break;
+                        }
+                        else if (site_ids.Contains(reservationChoice))
+                        {
+                            Reservation newReservation = new Reservation();
+                            newReservation.Site_Id = ((Site)availableSites.Where(s => s.Site_Id == reservationChoice)).Site_Id;
+                            newReservation.From_Date = arrivalDate;
+                            newReservation.To_Date = departureDate;
+                            newReservation.Name = CLIHelper.GetString("What name should the reservation be made under? ");
+
+                            ReservationSqlDAL rDal = new ReservationSqlDAL(ConnectionString);
+                            rDal.AddReservation(newReservation);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid selection. Please select a site id.");
+                        }
+                    }
                     break;
                 }
             }
-            
-            Console.WriteLine(Site.Header);
-            for (int i = 0; i < availableSites.Count; i++)
-            {
-                Console.WriteLine(availableSites[i]);
-            }
 
+            Console.WriteLine();
+            Console.WriteLine("Thank you for using our reservation system.");
+            Console.WriteLine("Please press enter to return to the main menu.");
             Console.ReadLine();
+
         }
     }
 }

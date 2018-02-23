@@ -98,7 +98,7 @@ namespace Capstone.DAL
 
 
         static string AvailableSitesFromCampground =
-            "SELECT                                                                         " + "\n" +
+            "SELECT TOP 5                                                                   " + "\n" +
             "   s.site_number,                                                              " + "\n" +
             "	s.max_occupancy,                                                            " + "\n" +
             "	s.accessible,                                                               " + "\n" +
