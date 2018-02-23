@@ -1,7 +1,7 @@
-DROP TABLE reservation;
-DROP TABLE site;
-DROP TABLE campground;
-DROP TABLE park;
+DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS site;
+DROP TABLE IF EXISTS campground;
+DROP TABLE IF EXISTS park;
 
 CREATE TABLE park (
   park_id integer identity NOT NULL,
