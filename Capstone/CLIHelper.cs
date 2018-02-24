@@ -224,6 +224,21 @@ namespace Capstone
             return dateValue;
         }
 
+        /// <summary>
+        /// Gets two user input dates with the following constraints: (1) The first date must be at least one day
+        /// prior to the second date. (2) The first date must be no earlier than the current date, unless
+        /// allowAdministrativeOverride is true. In that case, the user must supply the appropriate passcode.
+        /// </summary>
+        /// <param name="startPrompt">Prompt message for the first date.</param>
+        /// <param name="endPrompt">Prompt message for the second date.</param>
+        /// <param name="wrongOrderMessage">Error message for not having the first date at least one day 
+        /// earlier than the second date.</param>
+        /// <param name="allowAdministrativeOverride">Condition to allow user to have a date range
+        /// starting in the past. Requires the user to provide the code.</param>
+        /// <param name="administrativeCode">Code that the user must match to use past dates.</param>
+        /// <param name="codeRequiredMessage">Notification message to enter a passcode.</param>
+        /// <param name="codePrompt">Prompt message to enter a passcode.</param>
+        /// <returns></returns>
         public static Tuple<DateTime, DateTime> GetFutureDateRange(
             string startPrompt,
             string endPrompt,
