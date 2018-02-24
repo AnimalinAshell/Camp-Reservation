@@ -18,7 +18,7 @@ namespace Capstone
             this.ConnectionString = connectionString;
         }
 
-        bool individualPark;
+        bool returnToMainMenu;
 
         public void Run()
         {
@@ -30,7 +30,7 @@ namespace Capstone
                 Console.Clear();
                 Console.WriteLine("Select a park for further details..");
                 int parkSelection;
-                individualPark = true;
+                returnToMainMenu = false;
 
                 for (int i = 1; i < parks.Count; i++)
                 {
@@ -58,7 +58,7 @@ namespace Capstone
                     break; 
                 }
 
-                while (individualPark)
+                while (!returnToMainMenu)
                 {
                     Console.Clear();
                     Console.WriteLine(parks[parkSelection]);
@@ -88,7 +88,7 @@ namespace Capstone
                         }
                         else if (parkOption == 3)
                         {
-                            individualPark = false;
+                            returnToMainMenu = true;
                             break;
                         }
                         else
@@ -261,7 +261,7 @@ namespace Capstone
             Console.WriteLine();
             Console.WriteLine("Thank you for using our reservation system.");
             Console.WriteLine("Please press enter to return to the main menu.");
-            individualPark = false;
+            returnToMainMenu = true;
             Console.ReadLine();
 
         }
