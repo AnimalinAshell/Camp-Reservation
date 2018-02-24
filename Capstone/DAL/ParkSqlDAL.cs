@@ -17,6 +17,10 @@ namespace Capstone.DAL
             this.ConnectionString = connectionString;
         }
 
+        /// <summary>
+        /// Fetches all national parks from the database.
+        /// </summary>
+        /// <returns></returns>
         public List<Park> GetAllParks()
         {
             List<Park> parkList = new List<Park>();

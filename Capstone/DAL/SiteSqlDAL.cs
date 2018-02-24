@@ -17,7 +17,14 @@ namespace Capstone.DAL
             this.ConnectionString = connectionString;
         }
 
-
+        /// <summary>
+        /// Finds all campground sites that are available during the specified time period.
+        /// Reports the first 5 sites found for the given campground.
+        /// </summary>
+        /// <param name="campground"></param>
+        /// <param name="from_Date"></param>
+        /// <param name="to_Date"></param>
+        /// <returns></returns>
         public List<Site> GetAvailableSites(Campground campground, DateTime from_Date, DateTime to_Date)
         {
             List<Site> sites = new List<Site>();
@@ -58,6 +65,11 @@ namespace Capstone.DAL
             return sites;
         }
 
+        /// <summary>
+        /// SQL query for available sites. Subquerry checks for schedule conflicts and
+        /// excludes those sites from the available list. Seasonal campground availability
+        /// is considered separately.
+        /// </summary>
         static string AvailableSitesFromCampground =
             "SELECT TOP 5                                                                   " + "\n" +
             "   s.site_number,                                                              " + "\n" +

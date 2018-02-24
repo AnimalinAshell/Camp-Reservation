@@ -17,6 +17,11 @@ namespace Capstone.DAL
             this.ConnectionString = connectionString;
         }
 
+        /// <summary>
+        /// Adds a reservation to the database. Returns the reservation id.
+        /// </summary>
+        /// <param name="reservation"></param>
+        /// <returns>The reservation id (unique to this reservation).</returns>
         public int AddReservation(Reservation reservation)
         {
             int reservation_id = 0;
@@ -48,7 +53,6 @@ namespace Capstone.DAL
                 Console.WriteLine("Something went wrong with the SQL query.\n" + e.Message);
                 throw;
             }
-
 
             return reservation_id;
         }

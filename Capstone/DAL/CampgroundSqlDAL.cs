@@ -17,6 +17,11 @@ namespace Capstone.DAL
             this.ConnectionString = connectionString;
         }
 
+        /// <summary>
+        /// Fetches all of the campgrounds for a given national park.
+        /// </summary>
+        /// <param name="parkId"></param>
+        /// <returns></returns>
         public List<Campground> GetCampgroundsAtPark(int parkId)
         {
             List<Campground> campgrounds = new List<Campground>();
