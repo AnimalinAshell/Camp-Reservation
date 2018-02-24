@@ -13,10 +13,12 @@ namespace Capstone
     {
         private string ConnectionString { get; set; }
 
-        public NationalParkCLI (string connectionString)
+        public NationalParkCLI(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
+
+        bool individualPark;
 
         public void Run()
         {
@@ -28,6 +30,7 @@ namespace Capstone
                 Console.Clear();
                 Console.WriteLine("Select a park for further details..");
                 int parkSelection;
+                individualPark = true;
 
                 for (int i = 1; i < parks.Count; i++)
                 {
@@ -51,44 +54,51 @@ namespace Capstone
 
                 if (parkSelection == parks.Count)
                 {
-                    break;
+                    // Quit at Main Menu
+                    break; 
                 }
-                else if (parkSelection > 0 && parkSelection < parks.Count)
+
+                while (individualPark)
                 {
                     Console.Clear();
                     Console.WriteLine(parks[parkSelection]);
+
+                    int parkOption;
+
+                    Console.WriteLine();
+                    Console.WriteLine("  1)  View Campgrounds");
+                    Console.WriteLine("  2)  Search for Reservation");
+                    Console.WriteLine("  3)  Return to Previous Screen");
+
+                    
+                    while (true)
+                    {
+                        parkOption = CLIHelper.GetInteger(">>");
+
+                        if (parkOption == 1)
+                        {
+                            ViewCampgrounds(parks[parkSelection]);
+                            ActOnCampgrounds(parks[parkSelection]);
+                            break;
+                        }
+                        else if (parkOption == 2)
+                        {
+                            SearchForReservation(parks[parkSelection]);
+                            break;
+                        }
+                        else if (parkOption == 3)
+                        {
+                            individualPark = false;
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid option. Please choose a number from the list.");
+                        }
+
+                    }
                 }
-
-                int parkOption;
-
-                Console.WriteLine();
-                Console.WriteLine("  1)  View Campgrounds");
-                Console.WriteLine("  2)  Search for Reservation");
-                Console.WriteLine("  3)  Return to Previous Screen");
-
-                while (true)
-                {
-                    parkOption = CLIHelper.GetInteger(">>");
-
-                    if (parkOption == 1)
-                    {
-                        ViewCampgrounds(parks[parkSelection]);
-                        ActOnCampgrounds(parks[parkSelection]);
-                    }
-                    else if (parkOption == 2)
-                    {
-                        SearchForReservation(parks[parkSelection]);
-                    }
-                    else if (parkOption == 3)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid option. Please choose a number from the list.");
-                    }
-                }
-
+                
             }
         }
 
@@ -109,7 +119,7 @@ namespace Capstone
         }
 
         private void ActOnCampgrounds(Park park)
-        { 
+        {
             Console.WriteLine("Select a Command");
             Console.WriteLine("  1) Search for Available Reservation");
             Console.WriteLine("  2) Return to Previous Screen");
@@ -119,15 +129,21 @@ namespace Capstone
             while (true)
             {
                 campgroundOption = CLIHelper.GetInteger(">>");
-                if (campgroundOption == 1)
+                if (campgroundOption != 1 && campgroundOption != 2)
                 {
-                    SearchForReservation(park);
+                    Console.WriteLine("Please enter valid choice.");
                 }
-                else if (campgroundOption == 2)
+                else
                 {
                     break;
                 }
             }
+
+            if (campgroundOption == 1)
+            {
+                SearchForReservation(park);
+            }
+           
         }
 
         private void SearchForReservation(Park park)
@@ -142,7 +158,7 @@ namespace Capstone
             {
                 cgSelection = CLIHelper.GetInteger("Which campground (enter 0 to cancel)?");
 
-                if(cgSelection == 0)
+                if (cgSelection == 0)
                 {
                     return;
                 }
@@ -152,11 +168,81 @@ namespace Capstone
                 }
             }
 
-            arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
-            departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
+            List<Site> availableSites;
+            int[] site_numbers;
 
-            SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
-            List<Site> availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
+            while (true)
+            {
+                while (true)
+                {
+                    arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
+                    departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
+
+                    if (arrivalDate.Date < departureDate.Date)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Departure date must be at least one day after arrival date.");
+                    }
+                }
+
+                SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
+                availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
+                site_numbers = availableSites.Select(s => s.Site_Number).ToArray();
+
+                if (availableSites.Count == 0)
+                {
+                    string wantsAlternateRange = CLIHelper.GetString("No available sites. Would you like to enter an alternate date range? (yes or no): ");
+                    if (wantsAlternateRange.ToLower() != "yes")
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(Site.Header);
+                    for (int i = 0; i < availableSites.Count; i++)
+                    {
+                        Console.WriteLine(availableSites[i].ToString((int)(departureDate - arrivalDate).TotalDays));
+                    }
+
+                    Console.WriteLine();
+                    while (true)
+                    {
+                        int reservationChoice = CLIHelper.GetInteger("Which site should be reserved (enter 0 to cancel)? ");
+                        if (reservationChoice == 0)
+                        {
+                            break;
+                        }
+                        else if (site_numbers.Contains(reservationChoice))
+                        {
+                            Reservation newReservation = new Reservation();
+                            newReservation.Site_Id = availableSites.Where(s => s.Site_Number == reservationChoice).First().Site_Id;
+                            newReservation.From_Date = arrivalDate;
+                            newReservation.To_Date = departureDate;
+                            newReservation.Name = CLIHelper.GetString("What name should the reservation be made under? ");
+
+                            ReservationSqlDAL rDal = new ReservationSqlDAL(ConnectionString);
+                            int reservationConfirmation = rDal.AddReservation(newReservation);
+                            Console.WriteLine("The reservation has been made and the confirmation id is {0}", reservationConfirmation);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid selection. Please select a site id.");
+                        }
+                    }
+                    break;
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Thank you for using our reservation system.");
+            Console.WriteLine("Please press enter to return to the main menu.");
+            individualPark = false;
+            Console.ReadLine();
 
         }
     }

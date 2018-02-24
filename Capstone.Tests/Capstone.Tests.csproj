@@ -54,12 +54,19 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CampgroundSqlDALTests.cs" />
+    <Compile Include="ParkSqlDALTests.cs" />
+    <Compile Include="SiteSqlDALTests.cs" />
+    <Compile Include="ReservationnSqlDALTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capstone\Capstone.csproj">
       <Project>{a715d926-a478-4098-a01c-d7d241f4fbf0}</Project>
       <Name>Capstone</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

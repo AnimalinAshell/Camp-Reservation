@@ -11,11 +11,6 @@ namespace Capstone
     {
         static void Main(string[] args)
         {
-
-            // Use this so that you don't need to copy your connection string all over your code!            
-            // ConfigurationManager opens up the App.config file and looks for an entry called "CapstoneDatabase".
-            //     <add name="CapstoneDatabase" connectionString=""/>
-            // The actual connection string for the database is found connectionString attribute.            
             string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
             NationalParkCLI n = new NationalParkCLI(connectionString);
             n.Run();
