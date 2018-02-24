@@ -56,6 +56,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CampgroundSqlDALTests.cs" />
     <Compile Include="ParkSqlDALTests.cs" />
+    <Compile Include="SiteSqlDALTests.cs" />
+    <Compile Include="ReservationnSqlDALTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capstone\Capstone.csproj">

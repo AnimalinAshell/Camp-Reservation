@@ -13,6 +13,7 @@ namespace Capstone.Tests
     public class CampgroundSqlDALTests
     {
         [TestMethod]
+        [TestCategory("Campground SQL DAL")]
         public void GetCampgroundsAtPark_InsertedCampgroundExists()
         {
             using (TransactionScope transaction = new TransactionScope())
@@ -46,6 +47,11 @@ namespace Capstone.Tests
 
         static string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
 
+        /// <summary>
+        /// Inserts a campground into the database.
+        /// </summary>
+        /// <param name="park"></param>
+        /// <returns>Campground_id of the new park.</returns>
         public static int InsertFakeCampground(Campground camp)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))

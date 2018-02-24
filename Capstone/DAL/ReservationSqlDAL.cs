@@ -17,7 +17,7 @@ namespace Capstone.DAL
             this.ConnectionString = connectionString;
         }
 
-        public int AddReservation(Reservation reservation)//Site site, string name, DateTime arrival_date, DateTime departure_date)
+        public int AddReservation(Reservation reservation)
         {
             int reservation_id = 0;
 
