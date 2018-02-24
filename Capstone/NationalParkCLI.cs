@@ -114,6 +114,7 @@ namespace Capstone
             {
                 Console.WriteLine($"#{i,-1}   {campgrounds[i]}");
             }
+            Console.WriteLine();
 
             return campgrounds;
         }
@@ -178,13 +179,32 @@ namespace Capstone
                     arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
                     departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
 
-                    if (arrivalDate.Date < departureDate.Date)
+                    if (arrivalDate.Date >= departureDate.Date)
                     {
-                        break;
+                        Console.WriteLine("Departure date must be at least one day after arrival date.");
+                    }
+                    else if (arrivalDate.Date < DateTime.Now.Date)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Post-dated reservations require administrative access.");
+                        string administrativePass = CLIHelper.GetString("Please enter password to continue (0 to quit) (hint: 1234): ");
+                        Console.WriteLine();
+                        if (administrativePass == "0")
+                        {
+                            return;
+                        }
+                        else if (administrativePass == "1234")
+                        {
+                            Console.WriteLine("Administrative access granted for post-dated reservation.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please try again.");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Departure date must be at least one day after arrival date.");
+                        break;
                     }
                 }
 
