@@ -29,7 +29,6 @@ namespace Capstone
             {
                 Console.Clear();
                 Console.WriteLine("Select a park for further details..");
-                int parkSelection;
                 returnToMainMenu = false;
 
                 for (int i = 1; i < parks.Count; i++)
@@ -38,24 +37,12 @@ namespace Capstone
                 }
                 Console.WriteLine("  " + parks.Count + ")  Quit ");
 
-                while (true)
-                {
-                    parkSelection = CLIHelper.GetInteger(">>");
-                    if (parkSelection > 0 && parkSelection <= parks.Count)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid option. Please choose a number from the list.");
-                    }
-                }
-
+                int parkSelection = CLIHelper.GetIntegerInRange(">>", 1, parks.Count);
 
                 if (parkSelection == parks.Count)
                 {
                     // Quit at Main Menu
-                    break; 
+                    break;
                 }
 
                 while (!returnToMainMenu)
@@ -63,42 +50,29 @@ namespace Capstone
                     Console.Clear();
                     Console.WriteLine(parks[parkSelection]);
 
-                    int parkOption;
-
                     Console.WriteLine();
                     Console.WriteLine("  1)  View Campgrounds");
                     Console.WriteLine("  2)  Search for Reservation");
                     Console.WriteLine("  3)  Return to Previous Screen");
 
-                    
-                    while (true)
+                    int parkOption = CLIHelper.GetIntegerInRange(">>", 1, 3);
+
+                    if (parkOption == 1)
                     {
-                        parkOption = CLIHelper.GetInteger(">>");
-
-                        if (parkOption == 1)
-                        {
-                            ViewCampgrounds(parks[parkSelection]);
-                            ActOnCampgrounds(parks[parkSelection]);
-                            break;
-                        }
-                        else if (parkOption == 2)
-                        {
-                            SearchForReservation(parks[parkSelection]);
-                            break;
-                        }
-                        else if (parkOption == 3)
-                        {
-                            returnToMainMenu = true;
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid option. Please choose a number from the list.");
-                        }
-
+                        ViewCampgrounds(parks[parkSelection]);
+                        ActOnCampgrounds(parks[parkSelection]);
                     }
+                    else if (parkOption == 2)
+                    {
+                        SearchForReservation(parks[parkSelection]);
+                    }
+                    else if (parkOption == 3)
+                    {
+                        returnToMainMenu = true;
+                    }
+
                 }
-                
+
             }
         }
 
@@ -125,52 +99,31 @@ namespace Capstone
             Console.WriteLine("  1) Search for Available Reservation");
             Console.WriteLine("  2) Return to Previous Screen");
 
-
-            int campgroundOption;
-            while (true)
-            {
-                campgroundOption = CLIHelper.GetInteger(">>");
-                if (campgroundOption != 1 && campgroundOption != 2)
-                {
-                    Console.WriteLine("Please enter valid choice.");
-                }
-                else
-                {
-                    break;
-                }
-            }
+            int campgroundOption = CLIHelper.GetIntegerInRange(">>", 1, 2);
 
             if (campgroundOption == 1)
             {
                 SearchForReservation(park);
             }
-           
+
         }
 
         private void SearchForReservation(Park park)
         {
-            int cgSelection;
             DateTime arrivalDate;
             DateTime departureDate;
 
             List<Campground> campgrounds = ViewCampgrounds(park);
 
-            while (true)
+            int cgSelection = CLIHelper.GetIntegerInRange("Which campground (enter 0 to cancel)?",
+                0, campgrounds.Count - 1);
+            if (cgSelection == 0)
             {
-                cgSelection = CLIHelper.GetInteger("Which campground (enter 0 to cancel)?");
-
-                if (cgSelection == 0)
-                {
-                    return;
-                }
-                else if (cgSelection > 0 && cgSelection < campgrounds.Count)
-                {
-                    break;
-                }
+                return;
             }
 
             List<Site> availableSites;
-            int[] site_numbers;
+            List<int> site_numbers;
 
             while (true)
             {
@@ -210,7 +163,8 @@ namespace Capstone
 
                 SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
                 availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
-                site_numbers = availableSites.Select(s => s.Site_Number).ToArray();
+                site_numbers = availableSites.Select(s => s.Site_Number).ToList();
+                site_numbers.Add(0);
 
                 if (availableSites.Count == 0)
                 {
@@ -229,30 +183,20 @@ namespace Capstone
                     }
 
                     Console.WriteLine();
-                    while (true)
-                    {
-                        int reservationChoice = CLIHelper.GetInteger("Which site should be reserved (enter 0 to cancel)? ");
-                        if (reservationChoice == 0)
-                        {
-                            break;
-                        }
-                        else if (site_numbers.Contains(reservationChoice))
-                        {
-                            Reservation newReservation = new Reservation();
-                            newReservation.Site_Id = availableSites.Where(s => s.Site_Number == reservationChoice).First().Site_Id;
-                            newReservation.From_Date = arrivalDate;
-                            newReservation.To_Date = departureDate;
-                            newReservation.Name = CLIHelper.GetString("What name should the reservation be made under? ");
+                    int reservationChoice = CLIHelper.GetIntegerInRange("Which site should be reserved (enter 0 to cancel)?",
+                        site_numbers, "Invalid selection. Please select a site id.");
 
-                            ReservationSqlDAL rDal = new ReservationSqlDAL(ConnectionString);
-                            int reservationConfirmation = rDal.AddReservation(newReservation);
-                            Console.WriteLine("The reservation has been made and the confirmation id is {0}", reservationConfirmation);
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid selection. Please select a site id.");
-                        }
+                    if (reservationChoice != 0)
+                    {
+                        Reservation newReservation = new Reservation();
+                        newReservation.Site_Id = availableSites.Where(s => s.Site_Number == reservationChoice).First().Site_Id;
+                        newReservation.From_Date = arrivalDate;
+                        newReservation.To_Date = departureDate;
+                        newReservation.Name = CLIHelper.GetString("What name should the reservation be made under? ");
+
+                        ReservationSqlDAL rDal = new ReservationSqlDAL(ConnectionString);
+                        int reservationConfirmation = rDal.AddReservation(newReservation);
+                        Console.WriteLine("The reservation has been made and the confirmation id is {0}", reservationConfirmation);
                     }
                     break;
                 }
