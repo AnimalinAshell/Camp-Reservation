@@ -127,39 +127,55 @@ namespace Capstone
 
             while (true)
             {
-                while (true)
+                Tuple<DateTime, DateTime> dateRange = CLIHelper.GetFutureDateRange(
+                    "What is the arrival date? (MM/DD/YYYY): ",
+                    "What is the departure date? (MM/DD/YYYY): ",
+                    "Departure date must be at least one day after arrival date.",
+                    true, 
+                    "1234",
+                    "Post-dated reservations require administrative access.",
+                    "Please enter password to continue (0 to quit) (hint: 1234): ");
+                if (dateRange == null)
                 {
-                    arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
-                    departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
-
-                    if (arrivalDate.Date >= departureDate.Date)
-                    {
-                        Console.WriteLine("Departure date must be at least one day after arrival date.");
-                    }
-                    else if (arrivalDate.Date < DateTime.Now.Date)
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Post-dated reservations require administrative access.");
-                        string administrativePass = CLIHelper.GetString("Please enter password to continue (0 to quit) (hint: 1234): ");
-                        Console.WriteLine();
-                        if (administrativePass == "0")
-                        {
-                            return;
-                        }
-                        else if (administrativePass == "1234")
-                        {
-                            Console.WriteLine("Administrative access granted for post-dated reservation.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please try again.");
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    returnToMainMenu = true;
+                    break;
                 }
+                arrivalDate = dateRange.Item1;
+                departureDate = dateRange.Item2;
+
+                //while (true)
+                //{
+                //    arrivalDate = CLIHelper.GetDate("What is the arrival date? (MM/DD/YYYY): ");
+                //    departureDate = CLIHelper.GetDate("What is the departure date? (MM/DD/YYYY): ");
+
+                //    if (arrivalDate.Date >= departureDate.Date)
+                //    {
+                //        Console.WriteLine("Departure date must be at least one day after arrival date.");
+                //    }
+                //    else if (arrivalDate.Date < DateTime.Now.Date)
+                //    {
+                //        Console.WriteLine();
+                //        Console.WriteLine("Post-dated reservations require administrative access.");
+                //        string administrativePass = CLIHelper.GetString("Please enter password to continue (0 to quit) (hint: 1234): ");
+                //        Console.WriteLine();
+                //        if (administrativePass == "0")
+                //        {
+                //            return;
+                //        }
+                //        else if (administrativePass == "1234")
+                //        {
+                //            Console.WriteLine("Administrative access granted for post-dated reservation.");
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine("Please try again.");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        break;
+                //    }
+                //}
 
                 SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
                 availableSites = ssDal.GetAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);

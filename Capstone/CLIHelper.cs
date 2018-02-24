@@ -43,7 +43,7 @@ namespace Capstone
         /// <param name="upperBound">The upper bound (inclusive) for the allowable range.</param>
         /// <param name="rangeErrorMessage">Message to display for out of range attempts.</param>
         /// <returns></returns>
-        public static int GetIntegerInRange(string prompt, int lowerBound, int upperBound, 
+        public static int GetIntegerInRange(string prompt, int lowerBound, int upperBound,
             string rangeErrorMessage = "Invalid option. Please choose a number from the list.")
         {
             int intValue = lowerBound - 1;
@@ -171,6 +171,33 @@ namespace Capstone
         }
 
         /// <summary>
+        /// Gets a user input integer value from the provided allowable list.
+        /// </summary>
+        /// <param name="prompt"></param>
+        /// <param name="allowableNumbers"></param>
+        /// <param name="rangeErrorMessage"></param>
+        /// <returns></returns>
+        public static string GetStringInRange(string prompt, List<string> allowableStrings,
+            string rangeErrorMessage = "Invalid entry. Please try again.")
+        {
+            string userInput = String.Empty;
+            int numberOfAttempts = 0;
+
+            while (!allowableStrings.Contains(userInput))
+            {
+                if (numberOfAttempts > 0)
+                {
+                    Console.WriteLine(rangeErrorMessage);
+                }
+
+                userInput = GetString(prompt);
+                numberOfAttempts++;
+            }
+
+            return userInput;
+        }
+
+        /// <summary>
         /// Gets a user input DateTime object for the given message prompt.
         /// </summary>
         /// <param name="message"></param>
@@ -195,6 +222,59 @@ namespace Capstone
             while (!DateTime.TryParse(userInput, out dateValue));
 
             return dateValue;
+        }
+
+        public static Tuple<DateTime, DateTime> GetFutureDateRange(
+            string startPrompt,
+            string endPrompt,
+            string wrongOrderMessage = "End date must be at least one day after start date.",
+            bool allowAdministrativeOverride = false,
+            string administrativeCode = null,
+            string codeRequiredMessage = "Access code required.",
+            string codePrompt = "Please enter code (0 to cancel): ")
+        {
+
+            DateTime startDate;
+            DateTime endDate;
+            int numberOfAttempts = 0;
+
+            do
+            {
+
+                if (numberOfAttempts > 0)
+                {
+                    Console.WriteLine(wrongOrderMessage);
+                }
+
+                startDate = GetDate(startPrompt).Date;
+                endDate = GetDate(endPrompt).Date;
+
+                if (startDate < DateTime.Now.Date)
+                {
+                    if (allowAdministrativeOverride)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine(codeRequiredMessage);
+                        string administrativePass = GetStringInRange(codePrompt, new List<string> { "0", administrativeCode });
+                        Console.WriteLine();
+                        if (administrativePass == "0")
+                        {
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                numberOfAttempts++;
+
+            } while (startDate >= endDate);
+
+            Tuple<DateTime, DateTime> dateRange = new Tuple<DateTime, DateTime>(startDate, endDate);
+
+            return dateRange;
         }
     }
 }
