@@ -50,7 +50,7 @@ namespace Capstone.Tests
 
         [TestMethod]
         [TestCategory("Site SQL DAL")]
-        public void GetAvailableSites_AdjacentToEarlier_IsAvailable()
+        public void GetAvailableSites_AdjacentToPrior_IsAvailable()
         {
             using (TransactionScope transaction = new TransactionScope())
             {
@@ -79,27 +79,147 @@ namespace Capstone.Tests
 
         [TestMethod]
         [TestCategory("Site SQL DAL")]
-        public void GetAvailableSites_ReturnsNothingIfStartDateConflicts()
+        public void GetAvailableSites_AdjacentToNext_IsAvailable()
         {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                // Arrange
+                ManualInitialize();
+                SiteSqlDAL testClass = new SiteSqlDAL(connectionString);
+                DateTime testStartDate = new DateTime(2000, 6, 10).Date;
+                DateTime testEndDate = new DateTime(2000, 6, 20).Date;
+                DateTime conflictStartDate = new DateTime(2000, 6, 20).Date;
+                DateTime conflictEndDate = new DateTime(2000, 6, 30).Date;
+                ReservationSqlDAL rDal = new ReservationSqlDAL(connectionString);
+                Reservation tempReservation = new Reservation();
+                tempReservation.Site_Id = siteId;
+                tempReservation.Name = "TEMP RESERVATION";
+                tempReservation.From_Date = conflictStartDate;
+                tempReservation.To_Date = conflictEndDate;
+                rDal.AddReservation(tempReservation);
+
+                // Act
+                List<Site> availableSites = testClass.GetAvailableSites(testCamp, testStartDate, testEndDate);
+
+                // Assert
+                Assert.AreEqual(1, availableSites.Count);
+            }
         }
 
         [TestMethod]
         [TestCategory("Site SQL DAL")]
-        public void GetAvailableSites_ReturnsNothingIfEndDateConflicts()
+        public void GetAvailableSites_StartDateConflicts_IsNotAvailable()
         {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                // Arrange
+                ManualInitialize();
+                SiteSqlDAL testClass = new SiteSqlDAL(connectionString);
+                DateTime testStartDate = new DateTime(2000, 6, 10).Date;
+                DateTime testEndDate = new DateTime(2000, 6, 20).Date;
+                DateTime conflictStartDate = new DateTime(2000, 6, 05).Date;
+                DateTime conflictEndDate = new DateTime(2000, 6, 15).Date;
+                ReservationSqlDAL rDal = new ReservationSqlDAL(connectionString);
+                Reservation tempReservation = new Reservation();
+                tempReservation.Site_Id = siteId;
+                tempReservation.Name = "TEMP RESERVATION";
+                tempReservation.From_Date = conflictStartDate;
+                tempReservation.To_Date = conflictEndDate;
+                rDal.AddReservation(tempReservation);
+
+                // Act
+                List<Site> availableSites = testClass.GetAvailableSites(testCamp, testStartDate, testEndDate);
+
+                // Assert
+                Assert.AreEqual(0, availableSites.Count);
+            }
         }
 
         [TestMethod]
         [TestCategory("Site SQL DAL")]
-        public void GetAvailableSites_ReturnsNothingIfMiddleConflicts()
+        public void GetAvailableSites_EndDateConflicts_IsNotAvailable()
         {
-        }
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                // Arrange
+                ManualInitialize();
+                SiteSqlDAL testClass = new SiteSqlDAL(connectionString);
+                DateTime testStartDate = new DateTime(2000, 6, 10).Date;
+                DateTime testEndDate = new DateTime(2000, 6, 20).Date;
+                DateTime conflictStartDate = new DateTime(2000, 6, 15).Date;
+                DateTime conflictEndDate = new DateTime(2000, 6, 25).Date;
+                ReservationSqlDAL rDal = new ReservationSqlDAL(connectionString);
+                Reservation tempReservation = new Reservation();
+                tempReservation.Site_Id = siteId;
+                tempReservation.Name = "TEMP RESERVATION";
+                tempReservation.From_Date = conflictStartDate;
+                tempReservation.To_Date = conflictEndDate;
+                rDal.AddReservation(tempReservation);
 
+                // Act
+                List<Site> availableSites = testClass.GetAvailableSites(testCamp, testStartDate, testEndDate);
+
+                // Assert
+                Assert.AreEqual(0, availableSites.Count);
+            }
+        }
 
         [TestMethod]
         [TestCategory("Site SQL DAL")]
-        public void GetAvailableSites_ReturnsNothingIfParkClosed()
+        public void GetAvailableSites_WithinExisting_IsNotAvailable()
         {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                // Arrange
+                ManualInitialize();
+                SiteSqlDAL testClass = new SiteSqlDAL(connectionString);
+                DateTime testStartDate = new DateTime(2000, 6, 10).Date;
+                DateTime testEndDate = new DateTime(2000, 6, 20).Date;
+                DateTime conflictStartDate = new DateTime(2000, 6, 05).Date;
+                DateTime conflictEndDate = new DateTime(2000, 6, 25).Date;
+                ReservationSqlDAL rDal = new ReservationSqlDAL(connectionString);
+                Reservation tempReservation = new Reservation();
+                tempReservation.Site_Id = siteId;
+                tempReservation.Name = "TEMP RESERVATION";
+                tempReservation.From_Date = conflictStartDate;
+                tempReservation.To_Date = conflictEndDate;
+                rDal.AddReservation(tempReservation);
+
+                // Act
+                List<Site> availableSites = testClass.GetAvailableSites(testCamp, testStartDate, testEndDate);
+
+                // Assert
+                Assert.AreEqual(0, availableSites.Count);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Site SQL DAL")]
+        public void GetAvailableSites_SpanningExisting_IsNotAvailable()
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                // Arrange
+                ManualInitialize();
+                SiteSqlDAL testClass = new SiteSqlDAL(connectionString);
+                DateTime testStartDate = new DateTime(2000, 6, 05).Date;
+                DateTime testEndDate = new DateTime(2000, 6, 25).Date;
+                DateTime conflictStartDate = new DateTime(2000, 6, 10).Date;
+                DateTime conflictEndDate = new DateTime(2000, 6, 20).Date;
+                ReservationSqlDAL rDal = new ReservationSqlDAL(connectionString);
+                Reservation tempReservation = new Reservation();
+                tempReservation.Site_Id = siteId;
+                tempReservation.Name = "TEMP RESERVATION";
+                tempReservation.From_Date = conflictStartDate;
+                tempReservation.To_Date = conflictEndDate;
+                rDal.AddReservation(tempReservation);
+
+                // Act
+                List<Site> availableSites = testClass.GetAvailableSites(testCamp, testStartDate, testEndDate);
+
+                // Assert
+                Assert.AreEqual(0, availableSites.Count);
+            }
         }
 
         static string connectionString = ConfigurationManager.ConnectionStrings["CapstoneDatabase"].ConnectionString;
