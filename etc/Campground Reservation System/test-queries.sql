@@ -3,8 +3,8 @@ SELECT * FROM park
 SELECT * FROM campground
 
 DECLARE @input_campground_id AS int = 1
-DECLARE @input_to_date AS date = '2018-02-19'
-DECLARE @input_from_date AS date = '2018-02-20'
+DECLARE @input_to_date AS date = '2018-02-16'
+DECLARE @input_from_date AS date = '2018-02-23'
 SELECT
 	s.site_number,
 	s.max_occupancy,
@@ -21,8 +21,8 @@ WHERE
 		SELECT rs.site_id
 		FROM reservation rs
 		WHERE
-			(@input_to_date > from_date AND @input_to_date < to_date) OR
-			(@input_from_date > from_date AND @input_from_date < to_date)
+			(@input_to_date > rs.from_date AND @input_to_date < rs.to_date) OR
+			(@input_from_date > rs.from_date AND @input_from_date < rs.to_date)
 	)
 GROUP BY
 	s.site_number,
@@ -36,3 +36,13 @@ GROUP BY
 SELECT * FROM site
 
 SELECT * FROM reservation
+
+DECLARE @input_campground_id AS int = 1
+DECLARE @input_to_date AS date = '2018-02-16'
+DECLARE @input_from_date AS date = '2018-02-23'
+SELECT rs.site_id
+FROM reservation rs
+WHERE
+	(@input_to_date > rs.from_date AND @input_to_date < rs.to_date) OR
+	(@input_from_date > rs.from_date AND @input_from_date < rs.to_date) OR
+	(@input_from_date < rs.from_date AND @input_to_date > rs.to_date)
