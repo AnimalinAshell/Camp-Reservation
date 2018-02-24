@@ -21,7 +21,7 @@ namespace Capstone.Models
             return Name + " National Park" + "\n" +
                    "Locations:".PadRight(17) + Location + "\n" +
                    "Established:".PadRight(17) + Establish_Date.ToShortDateString() + "\n" +
-                   "Area:".PadRight(17) + Area.ToString() + " sq km" + "\n" +
+                   "Area:".PadRight(17) + $"{Area:###,###,##0} sq km" + "\n" +
                    "Annual Visitors:".PadRight(17) + $"{Visitors:###,###,###,##0}" + "\n\n" +
                    Description;
         }

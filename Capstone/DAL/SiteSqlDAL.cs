@@ -52,6 +52,7 @@ namespace Capstone.DAL
                         s.Max_Rv_Length = Convert.ToInt32(reader["max_rv_length"]);
                         s.Site_Number = Convert.ToInt32(reader["site_number"]);
                         s.Utilities = Convert.ToBoolean(reader["utilities"]) ? "Yes" : "N/A";
+                        s.Campground_Name = Convert.ToString(reader["name"]);
 
                         sites.Add(s);
                     }
@@ -78,7 +79,8 @@ namespace Capstone.DAL
             "	s.accessible,                                                               " + "\n" +
             "	s.max_rv_length,                                                            " + "\n" +
             "	s.utilities,                                                                " + "\n" +
-            "	c.daily_fee                                                                 " + "\n" +
+            "	c.daily_fee,                                                                " + "\n" +
+            "	c.name                                                                      " + "\n" +
             "FROM site s                                                                    " + "\n" +
             "JOIN campground c ON c.campground_id = s.campground_id                         " + "\n" +
             "WHERE                                                                          " + "\n" +
