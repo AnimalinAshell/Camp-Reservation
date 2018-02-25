@@ -60,35 +60,14 @@ namespace Capstone
 
                             if (cgSelection != 0)
                             {
-                                Tuple<DateTime, DateTime> dateRange = GetDateRange();
-                                if (dateRange == null)
-                                {
-                                    break;
-                                }
-                                DateTime arrivalDate = dateRange.Item1;
-                                DateTime departureDate = dateRange.Item2;
-
-                                List<Site> availableSites = SearchForAvailableSites(campgrounds[cgSelection], arrivalDate, departureDate);
-                                ActOnAvailableSites(availableSites, arrivalDate, departureDate);
-
+                                ManageAvailableSiteSearch(campgrounds[cgSelection]);
                                 CompletionMessageAndReturnToMainMenu();
                             }
                         }
                     }
                     else if (parkOption == 2)
                     {
-                        Tuple<DateTime, DateTime> dateRange = GetDateRange();
-                        if (dateRange == null)
-                        {
-                            break;
-                        }
-                        DateTime arrivalDate = dateRange.Item1;
-                        DateTime departureDate = dateRange.Item2;
-                        int numberOfNights = (int)(departureDate - arrivalDate).TotalDays;
-
-                        List<Site> availableSites = SearchForAvailableSites(parks[parkSelection], arrivalDate, departureDate);
-                        ActOnAvailableSites(availableSites, arrivalDate, departureDate);
-
+                        ManageAvailableSiteSearch(parks[parkSelection]);
                         CompletionMessageAndReturnToMainMenu();
                     }
                     else if (parkOption == 3)
@@ -97,6 +76,84 @@ namespace Capstone
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets date range from user, checks for available sites, and allows for reservations.
+        /// For searching an entire park.
+        /// </summary>
+        /// <param name="park"></param>
+        private void ManageAvailableSiteSearch(Park park)
+        {
+            List<Site> availableSites = new List<Site>();
+            DateTime arrivalDate = new DateTime();
+            DateTime departureDate = new DateTime();
+
+            while (availableSites.Count == 0)
+            {
+                Tuple<DateTime, DateTime> dateRange = GetDateRange();
+                if (dateRange == null)
+                {
+                    return;
+                }
+                arrivalDate = dateRange.Item1;
+                departureDate = dateRange.Item2;
+                int numberOfNights = (int)(departureDate - arrivalDate).TotalDays;
+
+                availableSites = SearchForAvailableSites(park, arrivalDate, departureDate);
+
+                if (availableSites.Count == 0)
+                {
+                    string wantsAlternateRange = CLIHelper.GetString(
+                        "No available sites. Would you like to enter an alternate date range? (yes or no): ");
+
+                    if (wantsAlternateRange.ToLower() != "yes")
+                    {
+                        return;
+                    }
+                }
+            }
+
+            ActOnAvailableSites(availableSites, arrivalDate, departureDate);
+        }
+
+        /// <summary>
+        /// Gets date range from user, checks for available sites, and allows for reservations.
+        /// For searching a single campground.
+        /// </summary>
+        /// <param name="park"></param>
+        private void ManageAvailableSiteSearch(Campground campground)
+        {
+            List<Site> availableSites = new List<Site>();
+            DateTime arrivalDate = new DateTime();
+            DateTime departureDate = new DateTime();
+
+            while (availableSites.Count == 0)
+            {
+                Tuple<DateTime, DateTime> dateRange = GetDateRange();
+                if (dateRange == null)
+                {
+                    return;
+                }
+                arrivalDate = dateRange.Item1;
+                departureDate = dateRange.Item2;
+                int numberOfNights = (int)(departureDate - arrivalDate).TotalDays;
+
+                availableSites = SearchForAvailableSites(campground, arrivalDate, departureDate);
+
+                if (availableSites.Count == 0)
+                {
+                    string wantsAlternateRange = CLIHelper.GetString(
+                        "No available sites. Would you like to enter an alternate date range? (yes or no): ");
+
+                    if (wantsAlternateRange.ToLower() != "yes")
+                    {
+                        return;
+                    }
+                }
+            }
+
+            ActOnAvailableSites(availableSites, arrivalDate, departureDate);
         }
 
         /// <summary>
@@ -116,7 +173,7 @@ namespace Capstone
 
             if (site_numbers.Distinct().Count() != site_numbers.Count)
             {
-                Console.WriteLine("Sorry! There are duplicate site numbers across different parks.");
+                Console.WriteLine("Sorry! There are duplicate site numbers across different campgrounds.");
                 Console.WriteLine("To make a reservation, please repeat the search for an individual campground.");
                 return;
             }
@@ -220,25 +277,10 @@ namespace Capstone
         /// <param name="campground">The campground for the search taking place.</param>
         private List<Site> SearchForAvailableSites(Campground campground, DateTime arrivalDate, DateTime departureDate)
         {
-
             List<Site> availableSites = new List<Site>();
 
-            while (availableSites.Count == 0)
-            {
-                SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
-                availableSites.AddRange(ssDal.GetAvailableSites(campground, arrivalDate, departureDate));
-
-                if (availableSites.Count == 0)
-                {
-                    string wantsAlternateRange = CLIHelper.GetString(
-                        "No available sites. Would you like to enter an alternate date range? (yes or no): ");
-
-                    if (wantsAlternateRange.ToLower() != "yes")
-                    {
-                        break;
-                    }
-                }
-            }
+            SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
+            availableSites.AddRange(ssDal.GetAvailableSites(campground, arrivalDate, departureDate));
 
             return availableSites;
         }
@@ -249,30 +291,15 @@ namespace Capstone
         /// <param name="campground">The campground for the search taking place.</param>
         private List<Site> SearchForAvailableSites(Park park, DateTime arrivalDate, DateTime departureDate)
         {
-
             List<Site> availableSites = new List<Site>();
 
             CampgroundSqlDAL cgDAL = new CampgroundSqlDAL(ConnectionString);
             List<Campground> campgrounds = cgDAL.GetCampgroundsAtPark(park.Park_id);
 
-            while (availableSites.Count == 0)
+            foreach (Campground campground in campgrounds)
             {
-                foreach (Campground campground in campgrounds)
-                {
-                    SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
-                    availableSites.AddRange(ssDal.GetAvailableSites(campground, arrivalDate, departureDate));
-                }
-
-                if (availableSites.Count == 0)
-                {
-                    string wantsAlternateRange = CLIHelper.GetString(
-                        "No available sites. Would you like to enter an alternate date range? (yes or no): ");
-
-                    if (wantsAlternateRange.ToLower() != "yes")
-                    {
-                        break;
-                    }
-                }
+                SiteSqlDAL ssDal = new SiteSqlDAL(ConnectionString);
+                availableSites.AddRange(ssDal.GetAvailableSites(campground, arrivalDate, departureDate));
             }
 
             return availableSites;
