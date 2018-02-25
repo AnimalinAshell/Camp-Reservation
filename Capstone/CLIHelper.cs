@@ -36,6 +36,43 @@ namespace Capstone
         }
 
         /// <summary>
+        /// Gets a user input value that is either an integer or the letter "Q".
+        /// </summary>
+        /// <param name="prompt"></param>
+        /// <param name="lowerBound"></param>
+        /// <param name="upperBound"></param>
+        /// <param name="rangeErrorMessage"></param>
+        /// <returns></returns>
+        internal static int GetIntegerOrQ(string prompt, int lowerBound, int upperBound,
+            string rangeErrorMessage = "Invalid entry. Please choose a value from the list.")
+        {
+            int result = 0;
+
+            List<string> stringRange = new List<string>();
+
+            for (int i = lowerBound; i <= upperBound; i++)
+            {
+                stringRange.Add(i.ToString());
+            }
+
+            stringRange.Add("q");
+            stringRange.Add("Q");
+
+            string userSelection = GetStringInRange(prompt, stringRange, rangeErrorMessage);
+
+            if (userSelection == "q" || userSelection == "Q")
+            {
+                result = upperBound + 1;
+            }
+            else
+            {
+                result = int.Parse(userSelection);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets a user input integer value in the specified range (inclusive).
         /// </summary>
         /// <param name="prompt">Prompt message for the user input.</param>

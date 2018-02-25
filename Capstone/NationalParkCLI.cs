@@ -32,7 +32,7 @@ namespace Capstone
             while (true)
             {
                 DisplayParkSelectionMenu(parks);
-                int parkSelection = CLIHelper.GetIntegerInRange(">>", 1, parks.Count);
+                int parkSelection = CLIHelper.GetIntegerOrQ(">>", 1, parks.Count - 1);
 
                 if (parkSelection == parks.Count)
                 {
@@ -236,7 +236,7 @@ namespace Capstone
             {
                 Console.WriteLine("  " + i + ")  " + parks[i].Name);
             }
-            Console.WriteLine("  " + parks.Count + ")  Quit ");
+            Console.WriteLine("  Q)  Quit ");
         }
 
         /// <summary>
