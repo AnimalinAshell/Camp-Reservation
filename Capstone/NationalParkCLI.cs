@@ -99,8 +99,17 @@ namespace Capstone
                 arrivalDate = dateRange.Item1;
                 departureDate = dateRange.Item2;
                 int numberOfNights = (int)(departureDate - arrivalDate).TotalDays;
+                Console.WriteLine();
+                
+                CampgroundSqlDAL cgDAL = new CampgroundSqlDAL(ConnectionString);
+                List<Campground> campgrounds = cgDAL.GetCampgroundsAtPark(park.Park_id);
 
-                availableSites = SearchForAvailableSites(park, arrivalDate, departureDate);
+                availableSites = SearchForAvailableSites(campgrounds, arrivalDate, departureDate);
+                
+                if (IsClosed(campgrounds, arrivalDate, departureDate))
+                {
+                    Console.WriteLine("One or more campgrounds are closed for part or all of your date range.");
+                }
 
                 if (availableSites.Count == 0)
                 {
@@ -138,11 +147,17 @@ namespace Capstone
                 arrivalDate = dateRange.Item1;
                 departureDate = dateRange.Item2;
                 int numberOfNights = (int)(departureDate - arrivalDate).TotalDays;
+                Console.WriteLine();
 
                 availableSites = SearchForAvailableSites(campground, arrivalDate, departureDate);
 
                 if (availableSites.Count == 0)
                 {
+                    if (IsClosed(campground, arrivalDate, departureDate))
+                    {
+                        Console.WriteLine("The campground is closed for part or all of your date range.");
+                    }
+
                     string wantsAlternateRange = CLIHelper.GetString(
                         "No available sites. Would you like to enter an alternate date range? (yes or no): ");
 
@@ -154,6 +169,51 @@ namespace Capstone
             }
 
             ActOnAvailableSites(availableSites, arrivalDate, departureDate);
+        }
+
+        /// <summary>
+        /// Determines if the campground is closed during part or all of a date range. This is redundant
+        /// to SQL query filters, but allows for a custom message in this case.
+        /// </summary>
+        /// <param name="campground"></param>
+        /// <param name="arrivalDate"></param>
+        /// <param name="departureDate"></param>
+        /// <returns></returns>
+        private bool IsClosed(Campground campground, DateTime arrivalDate, DateTime departureDate)
+        {
+            return
+                (arrivalDate.Month < campground.Open_From_MM) ||
+                (departureDate.Month > campground.Open_To_MM) ||
+                ((arrivalDate.Year != departureDate.Year) &&
+                (campground.Open_From_MM != 1) &&
+                (campground.Open_To_MM != 12));
+        }
+
+        /// <summary>
+        /// Determines if any of the campgrounds are closed during part or all of a date range. 
+        /// This is redundant to SQL query filters, but allows for a custom message in this case.
+        /// </summary>
+        /// <param name="campground"></param>
+        /// <param name="arrivalDate"></param>
+        /// <param name="departureDate"></param>
+        /// <returns></returns>
+        private bool IsClosed(List<Campground> campgrounds, DateTime arrivalDate, DateTime departureDate)
+        {
+            bool result = false;
+
+            foreach (Campground campground in campgrounds)
+            {
+                if ((arrivalDate.Month < campground.Open_From_MM) ||
+                    (departureDate.Month > campground.Open_To_MM) ||
+                    ((arrivalDate.Year != departureDate.Year) &&
+                    (campground.Open_From_MM != 1) &&
+                    (campground.Open_To_MM != 12)))
+                {
+                    result = true;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -179,7 +239,7 @@ namespace Capstone
             }
 
             int reservationChoice = CLIHelper.GetIntegerInRange("Which site should be reserved (enter 0 to cancel)?",
-                site_numbers, "Invalid selection. Please select a site id.");
+                site_numbers, "Invalid selection. Please select a site number.");
 
             if (reservationChoice != 0)
             {
@@ -289,12 +349,9 @@ namespace Capstone
         /// Searches for available sites at a given park and given timespan.
         /// </summary>
         /// <param name="campground">The campground for the search taking place.</param>
-        private List<Site> SearchForAvailableSites(Park park, DateTime arrivalDate, DateTime departureDate)
+        private List<Site> SearchForAvailableSites(List<Campground> campgrounds, DateTime arrivalDate, DateTime departureDate)
         {
             List<Site> availableSites = new List<Site>();
-
-            CampgroundSqlDAL cgDAL = new CampgroundSqlDAL(ConnectionString);
-            List<Campground> campgrounds = cgDAL.GetCampgroundsAtPark(park.Park_id);
 
             foreach (Campground campground in campgrounds)
             {
